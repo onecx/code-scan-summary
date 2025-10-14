@@ -7,19 +7,24 @@ echo "# Security Summary" > "$OUTPUT_FILE"
 echo "| Repository | Rule ID | Severity | Message | Alert URL |" >> "$OUTPUT_FILE"
 echo "|------------|---------|----------|---------|-----------|" >> "$OUTPUT_FILE"
 
-REPOS=$(gh repo list "$ORG" --limit 100 --json name -q '.[].name')
+REPOS=$(gh repo list "$ORG" --limit 1000 --json name -q '.[].name')
 
 for REPO in $REPOS; do
+  echo "Processing repository $REPO"
   RESPONSE=$(gh api "repos/$ORG/$REPO/code-scanning/alerts" 2>&1)
 
   if echo "$RESPONSE" | grep -q "HTTP 403"; then
+    echo "Repo $REPO has 403"
     continue
   elif echo "$RESPONSE" | grep -q "HTTP 404"; then
+    echo "Repo $REPO has 404"
     continue
   elif echo "$RESPONSE" | grep -q '\[\]'; then
+    echo "Repo $REPO has XXX"
     continue
   else
     ALERTS=$(echo "$RESPONSE" | jq -c '.[]')
+    echo "Alerts: $ALERTS"
     while IFS= read -r alert; do
       RULE_ID=$(echo "$alert" | jq -r '.rule.id')
       SEVERITY=$(echo "$alert" | jq -r '.rule.security_severity_level')
