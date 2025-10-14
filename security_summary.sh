@@ -19,9 +19,6 @@ for REPO in $REPOS; do
   elif echo "$RESPONSE" | grep -q "HTTP 404"; then
     echo "Alert response 404"
     continue
-  elif echo "$RESPONSE" | grep -q '\[\]'; then
-    echo "Alert response unknown"
-    continue
   else
     ALERTS=$(echo "$RESPONSE" | jq -c '.[]')
     echo "Alerts: $ALERTS"
