@@ -14,13 +14,13 @@ for REPO in $REPOS; do
   RESPONSE=$(gh api "repos/$ORG/$REPO/code-scanning/alerts" 2>&1)
 
   if echo "$RESPONSE" | grep -q "HTTP 403"; then
-    echo "Repo $REPO has 403"
+    echo "Alert response 403"
     continue
   elif echo "$RESPONSE" | grep -q "HTTP 404"; then
-    echo "Repo $REPO has 404"
+    echo "Alert response 404"
     continue
   elif echo "$RESPONSE" | grep -q '\[\]'; then
-    echo "Repo $REPO has XXX"
+    echo "Alert response unknown"
     continue
   else
     ALERTS=$(echo "$RESPONSE" | jq -c '.[]')
