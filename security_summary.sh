@@ -19,9 +19,14 @@ for REPO in $REPOS; do
   elif echo "$RESPONSE" | grep -q "HTTP 404"; then
     echo "Alert response 404"
     continue
-  else
+  else    
+    ALERT_COUNT=$(echo "$RESPONSE" | jq length 2>/dev/null)
+    if [ "$ALERT_COUNT" -eq 0 ]; then
+      echo "No alerts found"
+      continue
+    fi
+
     ALERTS=$(echo "$RESPONSE" | jq -c '.[]')
-    echo "Alerts: $ALERTS"
     while IFS= read -r alert; do
       RULE_ID=$(echo "$alert" | jq -r '.rule.id')
       SEVERITY=$(echo "$alert" | jq -r '.rule.security_severity_level')

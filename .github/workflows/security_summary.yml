@@ -30,3 +30,4 @@ jobs:
           else
             git commit -m "Update security summary"
             git push
+          fi
