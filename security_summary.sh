@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ORG="onecx"
-OUTPUT_FILE="SECURITY_SUMMARY.md"
+TIMESTAMP=$(date +"%y%m%d-%H%M")
+OUTPUT_FILE="SECURITY_SUMMARY_${TIMESTAMP}.md"
 
 echo "# Security Summary" > "$OUTPUT_FILE"
 echo "| Repository | Rule ID | Severity | Message | Alert URL |" >> "$OUTPUT_FILE"
@@ -31,9 +32,10 @@ for REPO in $REPOS; do
       RULE_ID=$(echo "$alert" | jq -r '.rule.id')
       SEVERITY=$(echo "$alert" | jq -r '.rule.security_severity_level')
       MESSAGE=$(echo "$alert" | jq -r '.most_recent_instance.message.text')
+      RAW_MESSAGE=$(echo "$alert" | jq -r '.most_recent_instance.message.text' | jq -Rs . | sed 's/^"//;s/"$//')
       URL=$(echo "$alert" | jq -r '.html_url')
 
-      echo "| $REPO | \`$RULE_ID\` | $SEVERITY | $MESSAGE | [Link]($URL) |" >> "$OUTPUT_FILE"
+      echo "| $REPO | \`$RULE_ID\` | $SEVERITY | $RAW_MESSAGE | [Link]($URL) |" >> "$OUTPUT_FILE"
     done <<< "$ALERTS"
   fi
 done
