@@ -33,7 +33,7 @@ for REPO in $REPOS; do
       MESSAGE=$(echo "$alert" | jq -r '.most_recent_instance.message.text')
       URL=$(echo "$alert" | jq -r '.html_url')
 
-      echo "| $REPO | \`$RULE_ID\` | $SEVERITY | $MESSAGE | [ink |" >> "$OUTPUT_FILE"
+      echo "| $REPO | \`$RULE_ID\` | $SEVERITY | $MESSAGE | [Link]($URL) |" >> "$OUTPUT_FILE"
     done <<< "$ALERTS"
   fi
 done
