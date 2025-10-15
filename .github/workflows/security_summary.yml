@@ -18,13 +18,13 @@ jobs:
         run: bash security_summary.sh
 
       - name: Show the security summary results to console
-        run: cat SECURITY_SUMMARY.md
+        run: cat ${{ env.OUTPUT_FILE }}
 
       - name: Commit and push Markdown file
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add SECURITY_SUMMARY.md
+          git add ${{ env.OUTPUT_FILE }}
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else

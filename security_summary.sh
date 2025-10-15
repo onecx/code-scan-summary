@@ -4,6 +4,9 @@ ORG="onecx"
 TIMESTAMP=$(date +"%y%m%d-%H%M")
 OUTPUT_FILE="SECURITY_SUMMARY_${TIMESTAMP}.md"
 
+# Export the filename for GitHub Actions
+echo "OUTPUT_FILE=$OUTPUT_FILE" >> $GITHUB_ENV
+
 echo "# Security Summary" > "$OUTPUT_FILE"
 echo "| Repository | Rule ID | Severity | Message | Alert URL |" >> "$OUTPUT_FILE"
 echo "|------------|---------|----------|---------|-----------|" >> "$OUTPUT_FILE"
