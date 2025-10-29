@@ -60,7 +60,7 @@ for REPO in $REPOS; do
     RAW_MESSAGE=$(echo "$alert" | jq -r '.most_recent_instance.message.text' | jq -Rs . | sed 's/^"//;s/"$//')
     URL=$(echo "$alert" | jq -r '.html_url')
 
-    echo "| $REPO | \`$RULE_ID\` | $SEVERITY | Link | $RAW_MESSAGE |" >> "$TEMP_DETAILS"
+    echo "| $REPO | \`$RULE_ID\` | $SEVERITY | [Link]($URL) | $RAW_MESSAGE |" >> "$TEMP_DETAILS"
   done <<< "$ALERTS"
 done
 
