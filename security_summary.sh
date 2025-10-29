@@ -14,7 +14,8 @@ echo "| Repository | Critical | High | Medium | Low | Null |" >> "$OUTPUT_FILE"
 echo "|------------|----------|------|--------|-----|------|" >> "$OUTPUT_FILE"
 
 # Prepare detailed table header
-DETAILED_TABLE="\n| Repository | Rule ID | Severity | Message | Alert URL |\n|------------|---------|----------|---------|-----------|"
+DETAILED_TABLE="\n# Security Details"
+DETAILED_TABLE+="\n| Repository | Rule ID | Severity | Alert URL | Message |\n|------------|---------|----------|---------|-----------|"
 
 REPOS=$(gh repo list "$ORG" --limit 1000 --json name -q '.[].name')
 
@@ -53,7 +54,7 @@ for REPO in $REPOS; do
     RAW_MESSAGE=$(echo "$alert" | jq -r '.most_recent_instance.message.text' | jq -Rs . | sed 's/^"//;s/"$//')
     URL=$(echo "$alert" | jq -r '.html_url')
 
-    DETAILED_TABLE+="\n| $REPO | \`$RULE_ID\` | $SEVERITY | $RAW_MESSAGE | [Link]($URL) |"
+    DETAILED_TABLE+="\n| $REPO | \`$RULE_ID\` | $SEVERITY | [Link]($URL) | $RAW_MESSAGE |"
   done <<< "$ALERTS"
 done
 
