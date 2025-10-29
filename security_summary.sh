@@ -3,6 +3,7 @@ ORG="onecx"
 TIMESTAMP=$(date +"%y%m%d-%H%M")
 OUTPUT_FILE="SECURITY_SUMMARY.md"
 ARCHIVE_FILE="archive/SECURITY_SUMMARY_${TIMESTAMP}.md"
+TEMP_DETAILS="details.tmp"
 
 echo "OUTPUT_FILE=$OUTPUT_FILE" >> $GITHUB_ENV
 mkdir -p archive
@@ -12,6 +13,11 @@ echo "# Security Summary" > "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 echo "| Repository | Critical | High | Medium | Low | Null |" >> "$OUTPUT_FILE"
 echo "|------------|----------|------|--------|-----|------|" >> "$OUTPUT_FILE"
+
+# Initialize temporary details file
+echo "# Security Details" > "$TEMP_DETAILS"
+echo "| Repository | Rule ID | Severity | Alert URL | Message |" >> "$TEMP_DETAILS"
+echo "|------------|---------|----------|-----------|---------|" >> "$TEMP_DETAILS"
 
 # Prepare detailed table header
 DETAILED_TABLE="\n# Security Details"
@@ -54,12 +60,13 @@ for REPO in $REPOS; do
     RAW_MESSAGE=$(echo "$alert" | jq -r '.most_recent_instance.message.text' | jq -Rs . | sed 's/^"//;s/"$//')
     URL=$(echo "$alert" | jq -r '.html_url')
 
-    DETAILED_TABLE+="\n| $REPO | \`$RULE_ID\` | $SEVERITY | [Link]($URL) | $RAW_MESSAGE |"
+    echo "| $REPO | \`$RULE_ID\` | $SEVERITY | Link | $RAW_MESSAGE |" >> "$TEMP_DETAILS"
   done <<< "$ALERTS"
 done
 
-# Append detailed table to output
-echo -e "$DETAILED_TABLE" >> "$OUTPUT_FILE"
+# Combine summary and details
+cat "$TEMP_DETAILS" >> "$OUTPUT_FILE"
+rm "$TEMP_DETAILS"
 
 # Copy to archive
 cp "$OUTPUT_FILE" "$ARCHIVE_FILE"
