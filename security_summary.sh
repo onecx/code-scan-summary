@@ -37,23 +37,23 @@ for REPO in $REPOS; do
     continue
   fi
 
-  ALERT_COUNT=$(echo "$RESPONSE" | jq length 2>/dev/null)
+  ALERT_COUNT=$(echo "$RESPONSE"  | jq '[.[] | select(.state != "fixed")] | length' 2>/dev/null)
   if [ "$ALERT_COUNT" -eq 0 ]; then
     echo "| $REPO | 0 | 0 | 0 | 0 | 0 |" >> "$OUTPUT_FILE"
     continue
   fi
 
   # Count severities
-  CRITICAL=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "critical")] | length')
-  HIGH=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "high")] | length')
-  MEDIUM=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "medium")] | length')
-  LOW=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "low")] | length')
-  NULL=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == null)] | length')
+  CRITICAL=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "critical" and .state != "fixed")] | length')
+  HIGH=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "high" and .state != "fixed")] | length')
+  MEDIUM=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "medium" and .state != "fixed")] | length')
+  LOW=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "low" and .state != "fixed")] | length')
+  NULL=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == null and .state != "fixed")] | length')
 
   echo "| $REPO | $CRITICAL | $HIGH | $MEDIUM | $LOW | $NULL |" >> "$OUTPUT_FILE"
 
   # Append alerts to detailed table
-  ALERTS=$(echo "$RESPONSE" | jq -c '.[]')
+  ALERTS=$(echo "$RESPONSE" | jq -c '.[] | select(.state != "fixed")')
   while IFS= read -r alert; do
     RULE_ID=$(echo "$alert" | jq -r '.rule.id')
     SEVERITY=$(echo "$alert" | jq -r '.rule.security_severity_level')
