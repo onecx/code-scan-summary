@@ -39,7 +39,7 @@ for REPO in $REPOS; do
 
   ALERT_COUNT=$(echo "$RESPONSE"  | jq '[.[] | select(.state != "fixed")] | length' 2>/dev/null)
   if [ "$ALERT_COUNT" -eq 0 ]; then
-    echo "| $REPO | 0 | 0 | 0 | 0 | 0 |" >> "$OUTPUT_FILE"
+    echo "| "🟩" $REPO | 0 | 0 | 0 | 0 | 0 |" >> "$OUTPUT_FILE"
     continue
   fi
 
@@ -55,10 +55,8 @@ for REPO in $REPOS; do
     COLOR="🟥"
   elif [ "$HIGH" -gt 0 ]; then
     COLOR="🟧"
-  elif [ "$MEDIUM" -gt 0 ] || [ "$LOW" -gt 0 ] || [ "$NULL" -gt 0 ]; then
-    COLOR="🟨"
   else
-    COLOR="🟩"
+    COLOR="🟨"
   fi
 
   echo "| $COLOR $REPO | $CRITICAL | $HIGH | $MEDIUM | $LOW | $NULL |" >> "$OUTPUT_FILE"
