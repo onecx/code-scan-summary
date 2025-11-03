@@ -53,7 +53,7 @@ for REPO in $REPOS; do
   echo "| $REPO | $CRITICAL | $HIGH | $MEDIUM | $LOW | $NULL |" >> "$OUTPUT_FILE"
 
   # Append alerts to detailed table
-  ALERTS=$(echo "$RESPONSE" | jq -c '.[]')
+  ALERTS=$(echo "$RESPONSE" | jq -c '.[] | select(.state != "fixed")')
   while IFS= read -r alert; do
     RULE_ID=$(echo "$alert" | jq -r '.rule.id')
     SEVERITY=$(echo "$alert" | jq -r '.rule.security_severity_level')
