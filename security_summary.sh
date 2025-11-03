@@ -50,7 +50,18 @@ for REPO in $REPOS; do
   LOW=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == "low" and .state != "fixed")] | length')
   NULL=$(echo "$RESPONSE" | jq '[.[] | select(.rule.security_severity_level == null and .state != "fixed")] | length')
 
-  echo "| $REPO | $CRITICAL | $HIGH | $MEDIUM | $LOW | $NULL |" >> "$OUTPUT_FILE"
+  # Determine emoji color
+  if [ "$CRITICAL" -gt 0 ]; then
+    COLOR="🟥"
+  elif [ "$HIGH" -gt 0 ]; then
+    COLOR="🟧"
+  elif [ "$MEDIUM" -gt 0 ] || [ "$LOW" -gt 0 ] || [ "$NULL" -gt 0 ]; then
+    COLOR="🟨"
+  else
+    COLOR="🟩"
+  fi
+
+  echo "| $COLOR $REPO | $CRITICAL | $HIGH | $MEDIUM | $LOW | $NULL |" >> "$OUTPUT_FILE"
 
   # Append alerts to detailed table
   ALERTS=$(echo "$RESPONSE" | jq -c '.[] | select(.state != "fixed")')
